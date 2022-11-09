@@ -9,11 +9,11 @@
 name: openstack-base
 series: focal
 variables:
-  openstack-origin: &openstack-origin cloud:focal-yoga
   data-port: &data-port br-ex:ens160
   osd-devices: &osd-devices /dev/sdb /dev/sdc
   expected-osd-count: &expected-osd-count 3
   expected-mon-count: &expected-mon-count 3
+  openstack-origin: &openstack-origin cloud:focal-yoga
   # custom variables
   openstack-channel: &openstack-channel yoga/stable
   ceph-channel: &ceph-channel quincy/stable
@@ -113,6 +113,7 @@ applications:
       neutron-security-groups: true
       flat-network-providers: physnet1
       openstack-origin: *openstack-origin
+      enable-ml2-port-security: true
     to:
     - lxd:1
   neutron-api-mysql-router:

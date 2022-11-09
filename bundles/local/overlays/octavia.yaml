@@ -1,3 +1,7 @@
+variables:
+  openstack-origin: &openstack-origin cloud:focal-yoga
+  openstack-channel: &openstack-channel yoga/stable
+  mysql-channel: &mysql-channel 8.0/stable
 applications:
   barbican-mysql-router:
     charm: ch:mysql-router
@@ -15,7 +19,6 @@ applications:
     channel: *openstack-channel
   octavia-ovn-chassis:
     charm: ch:ovn-chassis
-    channel: *openstack-channel
   octavia-mysql-router:
     charm: ch:mysql-router
     channel: *mysql-channel
