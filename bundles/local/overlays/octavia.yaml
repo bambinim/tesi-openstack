@@ -39,6 +39,7 @@ applications:
     num_units: 1
     options:
       source: ppa:simplestreams-dev/trunk
+      use_swift: false
     to:
     - lxd:0
   octavia-diskimage-retrofit:
