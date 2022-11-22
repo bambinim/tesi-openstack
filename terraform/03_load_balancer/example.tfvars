@@ -13,7 +13,8 @@ network = {
 }
 
 compute = {
-  image_id  = "76c6c0f5-91cc-4446-bc3f-00bd7ee3fb08" # default compute image id
-  flavor_id = "51c1c7b0-1811-4a61-bc55-fb82c86d24cb" # flavor id
-  ssh_key   = "terraform"                            # ssh key name
+  image_id       = "76c6c0f5-91cc-4446-bc3f-00bd7ee3fb08" # default compute image id
+  flavor_id      = "51c1c7b0-1811-4a61-bc55-fb82c86d24cb" # flavor id
+  ssh_key        = "terraform"                            # ssh key name
+  instance_count = 3                                      # instances count
 }
