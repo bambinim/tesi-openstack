@@ -37,6 +37,18 @@ resource "openstack_lb_listener_v2" "web_lb_listener" {
   default_pool_id = openstack_lb_pool_v2.web_lb_pool.id
 }
 
+resource "openstack_lb_monitor_v2" "web_lb_monitor" {
+  name           = "web_lb_monitor"
+  pool_id        = openstack_lb_pool_v2.web_lb_pool.id
+  type           = "HTTP"
+  delay          = 30
+  timeout        = 10
+  max_retries    = 10
+  url_path       = "/"
+  http_method    = "GET"
+  expected_codes = "200"
+}
+
 # floating IP
 resource "openstack_networking_floatingip_v2" "web_lb_floating_ip" {
   pool = var.network.external_network_name
