@@ -1,5 +1,42 @@
 \section{OpenStack}
 
+OpenStack è una piattaforma di cloud computing completamente open source. Viene largamente utilizzato sia da aziende che vogliono costruirsi un proprio cloud privato che da cloud provider che offrono i loro servizi a terzi.
+Una caratteristica fondamentale di OpenStack è che non è un software monolitico, ma è composto da numerosissimi componenti che permettono un'ampia personalizzazione; è possibile infatti decidere quali componenti installare in base alle funzionalità che si desiderano e su quale macchina fisica installare ciascun componente in modo che si possono costruire macchine con caratteristiche diverse in base al componente che devono ospitare (e.g. la macchina che deve contenere il componente di block storage sarà sicuramente diversa rispetto ad una che deve contendere l'hypervisor).
+Oltre ai propri componenti, OpenStack utilizza anche software di terze parti, che verrà approfondito nel capitolo \ref{sec:openstack_external_components}
+
 \subsection{Componenti di OpenStack}
 
-\subsection{Componenti esterni a OpenStack}
+\subsubsection{Cinder}\label{sec:openstack_cinder}
+Cinder è il servizio di block storage di OpenStack. Il suo compito è quello di fornire API di block storage sia agli utenti che agli altri componenti di OpenStack. Una sua caratteristica fondamentale è che virtualizza l'accesso ai dispositivi di block storage; questo implica che i client possano utilizzare le API che espone senza sapere quale sia il tipo di storage realmente utilizzato.
+
+\subsubsection{Glance}\label{sec:openstack_glance}
+Glance è il servizio di immagini di OpenStack, ovvero il servizio che si occupa di scoprire, registrare e fornire le immagini di macchine virtuali e i relativi metadati. Questo componente espone una serie di API che permettono di consultare i metadati di ciascuna immagine e di prelevare le immagini stesse. Glance ha la capacità di archiviare le immagini sia su storage locale che su block storage.
+
+\subsubsection{Horizon}
+Horizon è la dashboard predefinita di OpenStack. Fornisce un'applicazione web che si interfaccia con le API di tutti i componenti installati e permette di gestire il cloud tramite un'interfaccia grafica molto più semplice e intuitiva rispetto al tool a linea di comando. 
+
+\subsubsection{Keystone}\label{sec:openstack_keystone}
+Keystone è l'identity service di OpenStack. Si occupa di fornire le API per l'autenticazione dei client, rilevare i servizi e implementare l'autorizzazione multi-tenant.
+Supporta l'autenticazione tramite LDAP, OAuth, OpenID Connect, SAML e SQL.
+
+\subsubsection{Neutron}\label{sec:openstack_neutron}
+Neutron è il componente che gestisce tutta la parte di networking del cloud OpenStack. Nello specifico viene definito come un NaaS (Network as a Service) provider e permette di creare reti, sottoreti e router virtuali con lo scopo di far comunicare le macchine virtuali tra di loro e con l'esterno. Gestisce anche l'assegnazione degli indirizzi IP pubblici (denominati \textit{floating IP}) e include un servizio di firewall che permette raggrupare le regole in \textit{security groups} che poi possono essere assegnati alle macchine virtuali.
+
+Neutron mette a disposizione una vasta scelta di plugin, che permettono di scegliere quale backend utilizzare in base alle esigenze di ciscuna installazione. Nel nostro caso abbiamo utilizzato Open vSwitch perché e quello che viene consigliato di default.
+
+\subsubsection{Nova}
+Nova è il componente di OpenStack che permette di creare e gestire le macchine virtuali utilizzando l'hypervisor messo a disposizione dalla macchina host. Per poter funzionnare ha bisogno di interfacciarsi con i seguenti componenti di OpenStack: \hyperref[sec:openstack_keystone]{Keystone}, \hyperref[sec:openstack_glance]{Glance}, \hyperref[sec:openstack_neutron]{Neutron} e \hyperref[sec:openstack_placement]{Placement}. Nel caso in cui si volgia uno storage persistente per le macchine virtuali è richiesto anche \hyperref[sec:openstack_cinder]{Cinder}.
+
+Nova supporta anche la gestione di server bare metal (tramite l'uso di Ironic) e ha un supporto limitato per i container, ma in questo caso specifico non abbiamo approfondito queste sue funzionalità.
+
+\subsubsection{Placement}\label{sec:openstack_placement}
+Placement è il componente che si occupa di fare l'invetario e tenere traccia dei \textit{resource provider}. Un \textit{resouce provider} è un pool di risorse presenti nel cloud (e.g. nodi di calcolo, storage condivisi, pool di allocazione IP).
+
+\subsection{Componenti esterni a OpenStack}\label{sec:openstack_external_components}
+Come accennato in precedenza, OpenStack fa uso anche di componenti di terze parti; nello specifico, quelli utilizzati nella nostra installazione sono: MySQL, RabbitMQ, Vault, Open Virtual Network e Ceph. Alcuni di questi sono descritti più nello specifico nei prossimi paragrafi.
+
+\subsubsection{Vault}
+
+\subsubsection{Open Virtual Network}
+
+\subsubsection{Ceph}
