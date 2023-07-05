@@ -2,17 +2,7 @@ variables:
   openstack-origin: &openstack-origin cloud:focal-yoga
   openstack-channel: &openstack-channel yoga/stable
   mysql-channel: &mysql-channel 8.0/stable
-machines:
-  '0':
-    constraints: arch=amd64 tags=compute
-  '1':
-    constraints: arch=amd64 tags=compute
-  '2':
-    constraints: arch=amd64 tags=compute
-  '3':
-    constraints: arch=amd64 tags=compute
-  '4':
-    constraints: arch=amd64 tags=compute
+  ovn-channel: &ovn-channel 22.03/stable
 applications:
   barbican-mysql-router:
     charm: ch:mysql-router
@@ -30,6 +20,7 @@ applications:
     channel: *openstack-channel
   octavia-ovn-chassis:
     charm: ch:ovn-chassis
+    channel: *openstack-channel
   octavia-mysql-router:
     charm: ch:mysql-router
     channel: *mysql-channel
