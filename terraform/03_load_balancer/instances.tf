@@ -11,17 +11,6 @@ resource "openstack_compute_instance_v2" "web-server" {
     instance_idx = count.index
   })
 
-  /*
-  block_device {
-    uuid                  = var.compute.image_id
-    source_type           = "image"
-    volume_size           = 30
-    boot_index            = 0
-    destination_type      = "volume"
-    delete_on_termination = true
-  }
-  */
-
   network {
     name = openstack_networking_network_v2.web_private.name
   }

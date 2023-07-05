@@ -2,8 +2,8 @@ auth = {
   user         = "matteo"                   # openstack user
   password     = "ubuntu"                   # user's password
   keystone_url = "https://10.0.0.7:5000/v3" # openstack identity service url
-  project      = ""                         # openstack project
-  domain       = ""                         # openstack domain
+  project      = "project3"                 # openstack project
+  domain       = "domain"                   # openstack domain
 }
 
 network = {
