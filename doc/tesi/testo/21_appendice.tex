@@ -1,0 +1,82 @@
+%\chapter{Listati dei comandi}
+
+%\section{Installazione di MAAS}\label{sec:appendice_maas}
+
+%Di seguito sono riportati i comandi per l'installazione completa di MAAS.
+
+%\lstinputlisting[
+%caption={Installazione di MAAS.},
+%    language=appendice,
+%]
+%{tesi/files/installazioni/CLI/maas.txt}
+
+
+
+%\section{Installazione di Juju}\label{sec:appendice_juju}
+
+%Di seguito sono riportati i comandi per la corretta installazione di Juju e dell'inizializzazione del cloud.
+
+%\lstinputlisting[
+%caption={Installazione di Juju e inizializzazione del cloud.},
+%    language=appendice,
+%]
+%{tesi/files/installazioni/CLI/juju.txt}
+
+
+
+%\section{Installazione semi-automatizzata di OpenStack}\label{sec:appendice_openstack}
+%Di seguito è riportato l'elenco completo dei comandi eseguiti per il deploy di OpenStack attraverso Juju.
+% 
+%In rosso sono evidenziati quei valori che necessitano di essere modificati.
+%\lstinputlisting[
+%caption={Installazione di OpenStack attraverso Juju.},
+%    language=appendice,
+%]
+%{tesi/files/installazioni/CLI/openstack.txt}
+
+\chapter{Bundle di installazione}
+In questo capitolo verranno riportate le versioni finali del bundle di installazione di OpenStack e del bundle overlay che permette di installare Octavia e Barbican.
+
+\section{OpenStack}\label{app:openstack_bundle}
+
+\lstinputlisting[language=yaml,caption={}]{tesi/files/bundles/main.yaml}
+
+\section{Octavia e Brabican}\label{app:barbican_octavia_overlay}
+
+\lstinputlisting[language=yaml,caption={}]{tesi/files/bundles/octavia.yaml}
+
+\chapter{Progetti Terraform}
+
+\section{Progetto 1: istanza}\label{app:tf_proj1}
+
+\subsection{main.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/01_simple/main.tf}
+
+\section{Progetto 2: infrastruttura completa}\label{app:tf_proj2}
+
+\subsection{example.tfvars}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/02_full_infrastructure/example.tfvars}
+\subsection{instances.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/02_full_infrastructure/instances.tf}
+\subsection{main.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/02_full_infrastructure/main.tf}
+\subsection{networking.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/02_full_infrastructure/networking.tf}
+
+\section{Progetto 3: Proof of Concept}\label{app:tf_proj3}
+
+\subsection{example.tfvars}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/03_proof_of_concept/example.tfvars}
+\subsection{init-instance.sh}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/03_proof_of_concept/init-instance.sh}
+\subsection{instances.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/03_proof_of_concept/instances.tf}
+\subsection{load\_balancer.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/03_proof_of_concept/load_balancer.tf}
+\subsection{main.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/03_proof_of_concept/main.tf}
+\subsection{networking.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/03_proof_of_concept/networking.tf}
+\subsection{outputs.tf}
+\lstinputlisting[language=hcl,caption={}]{tesi/files/terraform_projects/03_proof_of_concept/outputs.tf}
+

@@ -1,0 +1,20 @@
+\chapter{Obiettivi}
+
+In questo capitolo verranno descritti i principali obiettivi di questo progetto di tesi. Alcuni termini e concetti verranno dati per scontati ma saranno poi approfonditi e spiegati nel dettaglio nei capitoli successivi.
+
+Lo scopo principale è creare un cloud privato OpenStack che si avvicini il più possibile come funzionalità ad uno che potrebbe essere usato in una realtà aziendale e successivamente studiare in che modo Terraform si integra con OpenStack e quali funzionalità mette a disposizione.
+
+\section{Progettazione del cluster}
+Come prima cosa sarà necessario identificare l'hardware a disposizione e, considerato il vasto numero di componenti software da installare, realizzare un piano di deployment che sfrutti al massimo le risorse a nostra disposizione. Dato il numero limitato di macchine con architettura amd64 disponibili per questo progetto, alcuni dei servizi che lo supportano verranno installati su hardware a basso costo e con architettura diversa (verosimilmente Raspberry Pi), in modo da avere il numero maggiore di nodi dedicati esclusivamente ai servizi di OpenStack. Questo ovviamente verrà fatto dopo aver verificato che non ci siano incompatibilità per via delle diverse architetture.
+
+\section{Installazione e configurazione dei sistemi di gestione del cloud}
+Il tipo di deployment che è stato scelto comporta l'utilizzo di sistemi avanzati di gestione del cloud, il cui scopo è semplificare il provisioning delle macchine fisiche e l'installazione del cloud stesso; nello specifico, si tratta di MAAS e Juju (approfonditi nei capitoli \ref{subsec:maas} e \ref{subsec:juju}). Questi sistemi devono essere installati e configurati prima di procedere con l'installazione di OpenStack.
+
+\section{Installazione manuale del cloud OpenStack}
+Come scritto nella guida all'installazione di OpenStack \cite{openstack_installation_juju}, è consigliato fare la prima installazione manualmente, in modo da comprendere quali componenti formano il cloud e in che modo interagiscono tra loro. Per questo motivo è stato deciso di procedere in questa maniera prima utilizzare l'installazione in bundle.
+
+\section{Installazione in bundle del cluster OpenStack}
+La metodologia di deployment scelta supporta anche l'installazione in bundle: tutti i componenti con le relative relazioni vengono definiti all'interno di un file in formato YAML e Juju, leggendo questo file, si occupa di installare tutti i Charms necessari. Questo tipo di installazione è sicuramente molto efficiente in ambienti reali in cui si possono avere anche centinaia di macchine da gestire.
+
+\section{Integrazione tra Terraform e OpenStack}
+L'ultimo passo, dopo aver ottenuto un cloud OpenStack perfettamente funzionante, sarà quello di studiare il supporto di Terraform a OpenStack e di verificare quali funzionalità sono disponibili e quali non lo sono.

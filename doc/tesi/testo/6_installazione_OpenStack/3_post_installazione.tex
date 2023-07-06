@@ -1,0 +1,342 @@
+\section{Configurazione iniziale}\label{sec:openstack_configurazioni_iniziali}
+In questo capitolo verrà trattata la configurazione iniziale di un cloud OpenStack. Tutta la configurazione verrà fatta seguendo la guida di installazione \cite{openstack_configure} e di conseguenza utilizzando il tool a linea di comando, però è possibile anche eseguire tutte le operazione descritte in questo capitolo tramite l'interfaccia web. È possibile ottenere le credenziali dell'utente \verb|admin| eseguendo il comando \code{juju run -{}-unit keystone/leader leader-get admin\_passwd} dall'host su cui è stato precedentemente installato e configurato il client Juju.
+% 
+Per maggiori dettagli su come ottenere l'accesso, consultare la \cref{subsec:openstack_dashboard}.
+
+Per comprendere meglio le configurazioni utilizzate in questa sezione, sia lato amministratore che utente, si consiglia di visionare la \cref{sec:openstack_usage} dove viene fornita una spiegazione dei concetti di base che permette di comprendere meglio quali sono le funzionalità di OpenStack e in che modo possono essere sfruttate.
+
+
+\paragraph{Installazione del client e accesso al cloud.}
+Per eseguire la configurazione tramite linea di comando è necessario installare il client OpenStack tramite il package manager (\texttt{snap} in questo caso) e clonare il repository openstack-bundles\footnote{OpenStack Bundle repository: \url{https://github.com/openstack-charmers/openstack-bundles}, ultimo accesso 28 Febbraio 2023}. 
+% 
+Per fare questo si devono eseguire i comando mostrati nel \cref{lst:openstack_config_install_client}
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Installazione del client openstack e clonazione del repo.},
+    label={lst:openstack_config_install_client},
+]
+sudo snap install openstackclients
+git clone https://github.com/openstack-charmers/openstack-bundles %*$\sim$*)/openstack-bundles
+\end{lstlisting}
+
+\noindent
+In questo modo il repo verrà clonato nella home dell'utente e successivamente sarà sufficiente eseguire il comando nel \cref{lst:openstack_config_set_env} per impostare le variabili d'ambiente in modo da avere accesso al cloud con privilegi di amministrazione.
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Configurazione dell'accesso al cloud.},
+    label={lst:openstack_config_set_env},
+]
+source %*$\sim$*)/openstack-bundles/stable/openstack-base/openrc
+\end{lstlisting}
+
+
+\subsection{Configurazioni da parte dell'amministratore}
+\paragraph{Immagini e Flavor.}
+Il primo passo è quello di creare la prima immagine e il primo flavor. Eseguendo i comandi nel \cref{lst:openstack_config_download_image} viene create la cartella \verb|cloud-images| nella home e al suo interno viene scaricata un'immagine recente di Ubuntu Jammy direttamente dall'archivio delle cloud images di Canonical; 
+in questo modo sarà poi possibile ricaricare l'immagine sul nuovo cloud.
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Download dell'immagine di Ubuntu Jammy server.},
+    label={lst:openstack_config_download_image},
+]
+mkdir %*$\sim$*)/cloud-images
+curl http://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img --output %*$\sim$*)/cloud-images/jammy-amd64.img
+\end{lstlisting}
+
+\noindent
+Una volta terminato il download è possibile creare una nuova immagine partendo da quella scaricata eseguendo il comando nel \cref{lst:openstack_config_create_image}.
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione di un'immagine partendo dal file scaricato.},
+    label={lst:openstack_config_create_image},
+]
+openstack image create --public --container-format bare --disk-format qcow2 --file %*$\sim$*)/cloud-images/jammy-amd64.img jammy-amd64
+\end{lstlisting}
+
+\begin{itemize}
+    \item \verb|--public|: indica che l'immagine è pubblica, ovvero è visibile a tutti gli utenti del cloud
+    \item \verb|--container-format|: indica il formato del container dell'immagine, ovvero per quale tecnologia di virtualizzazione o containerizzazione è stata create l'immagine (per esempio \verb|bare| per macchine virtuali, \verb|docker| per container docker, ecc.)
+    \item \verb|--disk-format|: indica il formato dell'immagine
+    \item \verb|--file|: permette di specificare un file locale dal quale leggere l'immagine
+    \item Come ultimo argomento deve essere inserito il nome dell'immagine
+\end{itemize}
+
+
+\medskip\noindent
+Successivamente è possibile creare un flavor eseguendo il comando nel \cref{lst:openstack_config_create_flavor} (per maggiori informazioni sui flavor si veda la \cref{sec:flavor}).
+%con i seguenti parametri:
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione di un flavor.},
+    label={lst:openstack_config_create_flavor},
+]
+openstack flavor create --ram 2048 --disk 20 --ephemeral 20 m1.small
+\end{lstlisting}
+\begin{itemize}
+    \item \verb|--vcpus|: numero di CPU virtuali (di default impostato a 1)
+    \item \verb|--ram|: quantità di memoria RAM espressa in MB
+    \item \verb|--ephemeral|: dimensione dello storage storage temporaneo espresso in GB (utilizzato nel caso in cui non venga creato un volume per l'istanza)
+    \item Come ultimo argomento deve essere inserito il nome del flavor
+\end{itemize}
+
+
+\paragraph{Rete pubblica.}
+Dopo aver creato la prima immagine e il primo flavor è necessario configurare la rete pubblica, ovvero la rete che permette alle istanze di tutto il cloud di comunicare con l'esterno. Per fare questo è necessario prima di tutto creare la rete eseguendo i comandi nel \cref{lst:openstack_config_create_public_network}.
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione di una rete pubblica.},
+    label={lst:openstack_config_create_public_network},
+]
+openstack network create --external --share --provider-network-type flat --provider-physical-network physnet1 ext_net
+\end{lstlisting}
+
+\begin{itemize}
+    \item \verb|--external|: indica che è una rete pubblica
+    \item \verb|--share|: indica che la rete è condivisa tra tutti gli utenti del cloud
+    \item \verb|---provider-network-type|: permette di specificare il meccanismo fisico con il quale la rete virtuale è implementata; in questo caso \verb|flat| significa che utilizza una scheda di rete fisica configurata come bridge
+    \item \verb|--provider-physical-network|: nome della rete fisica sulla quale la rete virtuale si appoggia
+    \item Come ultimo argomento deve essere inserito il nome della nuova rete.
+\end{itemize}
+
+\medskip\noindent
+Dopo aver creato la rete è possibile creare anche la subnet utilizzando il comando mostrato nel \cref{lst:openstack_config_create_public_subnet}.
+% con i seguenti parametri:
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione di una subnet pubblica.},
+    label={lst:openstack_config_create_public_subnet},
+]
+openstack subnet create --network ext_net --no-dhcp --gateway 10.0.0.1 --subnet-range 10.0.0.0/24 --allocation-pool start=10.0.0.40,end=10.0.0.99 ext_subnet
+\end{lstlisting}
+\begin{itemize}
+    \item \verb|--network|: nome della rete dentro la quale creare la subnet
+    \item \verb|--no-dhcp|: se specificato il DHCP viene disabilitato per la nuova subnet
+    \item \verb|--gateway|: indirizzo IP del gateway
+    \item \verb|--subnet-range|: permette di specificare il range di indirizzi IP appartenenti alla subnet (in formato CIDR)
+    \item \verb|--allocation-pool|: permette di specificare il pool di indirizzi IP assegnabili dinamicamente (nel formato \verb|start_ip,end_ip|). Questo pool può risiedere anche nella sottorete di MAAS. Quindi bisogna riservare questi indirizzi in modo tale che non li utilizzi. Per farlo, bisogna connettersi alla dashboard di MAAS, preme in alto su \emph{Subnets} e selezionare la VLAN. Poi, bisogna premere sul pulsante \emph{Reserve Range} (NON \emph{dynamic}) ed inserire i due indirizzi IP del pool.
+    % matteo si è scordato di spiegare l'aggiunta degli ip  riservati su maas...
+ \item Come di consueto l'ultimo argomento deve essere il nome della nuova subnet.
+\end{itemize}
+
+
+\paragraph{Dominio, Progetto e Utente.}
+A questo punto può considerarsi conclusa la configurazione delle risorse condivise ed è possibile iniziare a configurare le risorse per gli utilizzatori del cloud, ovvero domini, progetti e utenti.
+
+Il primo passo è quello di creare un dominio, perché senza quest'ultimo non è possibile aggiungere progetti o utenti al di fuori del dominio di amministrazione. Successivamente, si possono creare il progetto, specificando il domain in cui inserirlo, e l'utente, specificando il progetto e il dominio di cui appartiene. Questi tre comandi sono esplicitati nel \cref{lst:openstack_config_create_domain_project_user}.
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione di dominio, progetto e utente.},
+    label={lst:openstack_config_create_domain_project_user},
+]
+openstack domain create domain1
+openstack project create --domain domain1 project1
+openstack user create --domain domain1 --project project1 --password-prompt user1
+\end{lstlisting}
+\begin{itemize}
+    \item Con \verb|--password-prompt| la password verrà richiesta a terminale una volta eseguito il comando.
+\end{itemize}
+
+\medskip\noindent
+Dopo aver creato l'utente è necessario assegnargli un ruolo in base ai permessi che gli si vogliono consentire. In questo caso verrà assegnato il ruolo \verb|Member| al nuovo utente utilizzando il comando mostrato nel \cref{lst:openstack_config_set_user_role}; in questo modo che potrà effettuare tutte quelle operazioni che non richiedono permessi di amministrazione.
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Assegnazione del ruolo al nuovo utente.},
+    label={lst:openstack_config_set_user_role},
+]
+openstack role add --user 8b16e5335976418e99bf0b798e83e413 --project project1 Member
+\end{lstlisting}
+
+\bigskip\noindent
+A questo punto è possibile iniziare ad utilizzare il cloud con il nuovo utente appena creato. 
+% 
+% Per fare un primo test e verificare che tutto funzioni correttamente si può procedere nel seguente ordine:
+% \begin{enumerate}
+%     \item Creazione di una rete privata e di una subnet
+%     \item Creazione di un router per collegare la rete pubblica con quella privata
+%     \item Creazione o inserimento di una coppia di chiavi pubbliche-private
+%     \item Creazione di un'istanza
+%     \item Assegnazione di un floating IP alla nuova istanza
+% \end{enumerate}
+
+% \medskip\noindent
+% Tutte le istruzioni per eseguire le operazioni sopra citate si trovano nel \cref{sec:openstack_usage} insieme ad una spiegazione dei concetti di base che permettono di comprendere meglio quali sono le funzionalità di OpenStack e in che modo possono essere sfruttate.
+
+
+
+\subsection{Configurazioni da parte dell'utente}
+\paragraph{Setup ambiente utente.}
+Prima di iniziare ad utilizzare il nuovo utente, è necessario configurare le variabili d'ambiente del terminale per poter eseguire i comandi \texttt{openstack} con questi privilegi.
+% 
+Come prima cosa, bisogna prelevare l'URL di \emph{Keystone} per l'autenticazione; 
+% 
+è possibile ricavarlo tramite il comando \code{juju status} o più semplicemente, si può ricavare dall'ambiente amministratore utilizzato in precedenza dalla variabile \texttt{OS\_AUTH\_URL}.
+% 
+Quindi basterà eseguire sul terminale \code{echo \$OS\_AUTH\_URL} per avere in output l'URL.
+
+A questo punto, si può creare un file con le configurazioni d'esempio mostrate nel \cref{lst:openstack_ambiente_utente}.
+% 
+In questo caso il file verrà chiamato \emph{project1-rc} (senza estensione).
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={File per l'ambiente utente \emph{user1}.},
+    label={lst:openstack_ambiente_utente},
+]
+export OS_AUTH_URL=https://10.0.0.7:5000/v3
+export OS_USER_DOMAIN_NAME=domain1
+export OS_USERNAME=user1
+export OS_PROJECT_DOMAIN_NAME=domain1
+export OS_PROJECT_NAME=project1
+export OS_PASSWORD=ubuntu
+\end{lstlisting}
+\begin{itemize}
+    \item I valori delle variabili sono i medesimi creati per l'utente nel \cref{lst:openstack_config_create_domain_project_user}.
+    \item Per la password, si è ipotizzato che è stata inserita \emph{ubuntu}.
+\end{itemize}
+
+\noindent
+Una volta salvato il file, è possibile eseguire il comando \code{source project1-rc} per impostare le variabili d'ambiente per avere eccesso al cloud con l'utente scelto.
+% 
+Ora è possibile utilizzare il cloud con l'utente attraverso la riga di comando.
+
+
+
+\paragraph{Rete Privata.}
+Come prima cosa, verrà configurata la rete privata che verrà poi utilizzata dalle varie macchine virtuali.
+% 
+Si eseguano i comandi nel \cref{lst:openstack_config_create_private_network} per poterla creare.
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione di una rete privata con la relativa subnet.},
+    label={lst:openstack_config_create_private_network},
+]
+openstack network create --internal user1_net
+
+openstack subnet create --network user1_net --dns-nameserver 10.0.0.2 --subnet-range 192.168.0/24 --allocation-pool start=192.168.0.10,end=192.168.0.199 user1_subnet
+\end{lstlisting}
+
+\begin{itemize}
+    \item \verb|--internal|: indica che si tratta di una rete privata
+    
+    \item \verb|--dns-nameserver|: indica l'indirizzo del DNS utilizzato
+    
+    \item Come ultimo argomento dei due comandi deve essere inserito il nome della nuova rete e della nuova subnet
+\end{itemize}
+
+\noindent
+Creata la rete, è necessario creare un router virtuale per poter collegare la rete pubblica con la rete appena creata.
+% 
+I comandi mostrati in  mostrano la creazione del router.
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione di una router virtuale.},
+    label={lst:openstack_config_create_router},
+]
+openstack router create user1_router
+openstack router add subnet user1_router user1_subnet
+openstack router set user1_router --external-gateway ext_net
+\end{lstlisting}
+\begin{itemize}
+    \item \verb|--external-gateway|: indica il nome della rete esterna creata nel \cref{lst:openstack_config_create_public_network}
+    
+    \item Come ultimo argomento del primo comando deve essere inserito il nome del nuovo router
+\end{itemize}
+
+
+
+\paragraph{Import chiavi SSH e Security Group.}
+Per poter accedere alle istanze delle macchine virtuali, è necessario importare una coppia di chiavi SSH.
+% 
+Nel \cref{lst:openstack_config_import_key} è mostrato come viene importata la chiave pubblica SSH all'interno di OpenStack.
+
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Importazione delle chiavi SSH.},
+    label={lst:openstack_config_import_key},
+]
+openstack keypair create --public-key %*$\sim$*)/.ssh/id_rsa.pub user1
+\end{lstlisting}
+\begin{itemize}
+    \item \verb|--public-key|: indica il path della chiave pubblica
+        
+    \item Come ultimo argomento deve essere inserito il nome da associare alla \emph{Key Pairs}
+\end{itemize}
+
+\noindent
+Per consentire il passaggio del traffico SSH nelle future macchine virtuali, è necessario creare un \emph{Security Group} come mostrato nel \cref{lst:openstack_config_create_security_group}, avente le varie regole per consentire il traffico su determinati protocolli e porte.
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione del Security Group per il traffico SSH.},
+    label={lst:openstack_config_create_security_group},
+]
+openstack security group create --description 'Allow SSH' Allow_SSH
+openstack security group rule create --proto tcp --dst-port 22 Allow_SSH
+\end{lstlisting}
+\begin{itemize}
+    \item \verb|--description|: è la descrizione del gruppo di regole da creare
+        
+    \item \verb|--proto|: indica il protocollo della regola
+        
+    \item \verb|--dst-port|: indica la porta della regola
+        
+    \item Come ultimo argomento dei due comandi deve essere inserito il nome da associare al \emph{Security Group} e alla relativa regola
+\end{itemize}
+
+
+
+\paragraph{Creazione di una istanza.}
+Finalmente è possibile creare una macchina virtuale.
+% 
+Per farlo è sufficiente eseguire il comando mostrato nel \cref{lst:openstack_config_create_istance}
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione di una istanza della macchina virtuale.},
+    label={lst:openstack_config_create_istance},
+]
+openstack server create --image jammy-amd64 --flavor m1.small --key-name user1 --network user1_net --security-group Allow_SSH jammy-1
+\end{lstlisting}
+\begin{itemize}
+    \item \verb|--image|: viene indicata l'immagine da utilizzare
+    
+    \item \verb|--flavor|: viene indicato il flavor da utilizzare
+
+    \item \verb|--key-name|: viene indicato il nome della key pair da utilizzare
+        
+    \item \verb|--network|: indica il nome della rete privata su cui la macchina virtuale si collegherà  
+        
+    \item \verb|--security-group|: indica il gruppo di regole per consentire il traffico dati
+        
+    \item Come ultimo argomento deve essere inserito il nome da associare alla istanza della macchina virtuale
+\end{itemize}
+
+\noindent
+Al termine ella creazione della macchina virtuale, è possibile associargli un indirizzo pubblico per poter poi collegarsi in SSH.
+% 
+Anche questa volta, nel \cref{lst:openstack_config_create_floating_ip} verrà mostrato come poter eseguire questa fase.
+\begin{lstlisting}[
+    language=mybash, 
+    caption={Creazione e associazione di un floating ip alla vm.},
+    label={lst:openstack_config_create_floating_ip},
+]
+FLOATING_IP=$(openstack floating ip create -f value -c floating_ip_address ext_net)
+openstack server add floating ip jammy-1 $FLOATING_IP
+\end{lstlisting}
+
+\noindent
+Una volta eseguito, si avrà l'indirizzo IP pubblico all'interno della variabile \texttt{FLOATING\_IP}, e pertanto è possibile utilizzarlo per connettersi in SSH alla macchina virtuale.
+
+\bigskip
+\noindent
+Si conclude qui l'installazione e l'uso base del cloud OpenStack.
+% 
+Nel \cref{sec:openstack_usage} è possibile approfondire gli aspetti trattati in questa sezione, mentre nella \cref{sec:terraform} è stato utilizzato lo strumento Terraform per poter creare le varie risorse di OpenStack tramite del codice di configurazione.

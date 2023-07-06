@@ -1,0 +1,29 @@
+\chapter{Introduzione}
+
+Il cloud computing consiste in una serie di servizi che permettono di creare e gestire risorse IT on-demand con una tariffa basata sul consumo. I principali vantaggi sono la flessibilità dell'infrastruttura e la notevole riduzione dei costi di manutenzione, considerando anche che rispetto ad un'infrastruttura on-premises non c'è nessun tipo di hardware da gestire. Per questi motivi negli ultimi anni la richiesta di servizi di cloud computing è aumentata notevolmente e ad oggi di tratta di un mercato da centinaia di miliardi di dollari all'anno che vede come player principali Amazon Web Services, Google Cloud Platform e Microsoft Azure.
+
+Purtroppo però non è tutto oro quel che luccica; esistono infatti diversi svantaggi nell'utilizzare questi tipi di servizi tra i quali il più rilevante è sicuramente il costo. Nonostante i benefici citati prima può essere poco conveniente utilizzare servizi di cloud compunting per casi d'uso in cui si ha bisogno di ingenti risorse di calcolo o di elevati volumi di storage. Per questo motivo molte realtà aziendali preferiscono creare un'infrastruttura cloud privata. Ci sono numerose piattaforme che permettono di realizzare questo tipo di infrastrutture e una di queste è OpenStack.
+
+OpenStack è una piattaforma di cloud computing open source che permette di realizzare infrastrutture cloud sia private che pubbliche. Esistono infatti cloud provider che utilizzano OpenStack come base per erogare i loro servizi; un esempio è OVH, uno dei più grandi provider d'Europa.
+OpenStack è anche scelto da molte aziende come base per il loro cloud privato per via della sua architettura modulare e grazie al fatto che le funzionalità offerte sono molto simili a quelle dei cloud provider.
+
+\section{Il progetto}
+
+L'obiettivo di questo progetto di tesi è prima di tutto installare e configurare un cloud privato basato su OpenStack per poi scoprirne le caratteristiche e studiarne le funzionalità nel dettaglio.
+
+È inoltre previsto lo studio di Terraform, un Infrastructure as Code (IaC) tool, ovvero uno strumento che permette di definire infrastrutture cloud utilizzando solamente codice scritto all'interno di file di configurazione. In particolare si vuole studiare come questo strumento si integra con OpenStack e di come è possibile creare risorse all'interno di OpenStack utilizzandolo.
+
+\section{Struttura del documento}
+
+In questa sezione verrà esplicitata la struttura del documento descrivendo in maniera molto sintetica il contenuto di ciascun capitolo.
+
+\begin{description}
+    \item \textbf{Obiettivi} - Descrizione approfondita degli obbiettivi posti per lo svolgimento del progetto.
+    \item \textbf{Progettazione del cluster} - Descrizione dell'architettura del cloud e approfondimento sulle scelte di progettazione e sulle motivazione di tali scelte.
+    \item \textbf{Prerequisiti} - Descrizione dei componenti software necessari come supporto all'installazione di OpenStack (MAAS e Juju) e spiegazione delle procedure di installazione e configurazione di tali componenti.
+    \item \textbf{OpenStack} - Descrizione della piattaforma OpenStack, dei suo componenti principali che verranno installati e dei software esterni necessari per far funzionare la piattaforma.
+    \item \textbf{Installazione di OpenStack} - Descrizione delle procedure di installazione manuale e in bundle di OpenStack e spiegazione delle procedure di configurazione.
+    \item \textbf{Utilizzo di OpenStack} - Istruzioni su come utilizzare al meglio un cloud OpenStack e su come sfruttarne a pieno le risorse.
+    \item \textbf{Load Balancer} - Descrizione del servizio di load balancing di OpenStack, dei componenti che ne fanno parte, spiegazione delle procedure di installazione e di configurazione di tali componenti e istruzioni per l'utilizzo del load balancer.
+    \item \textbf{Terraform} - Descrizione del tool Terraform, di come questo tool si integra con OpenStack e dei progetti Terraform realizzati durante lo svolgimento della tesi.
+\end{description}

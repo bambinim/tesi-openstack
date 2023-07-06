@@ -1,0 +1,9 @@
+ovn-chassis:
+  bridge-interface-mappings: br-ex:enp3s0
+  ovn-bridge-mappings: physnet1:br-ex
+neutron-api:
+  neutron-security-groups: true
+  flat-network-providers: physnet1
+  openstack-origin: distro
+ovn-central:
+  source: distro

@@ -1,0 +1,38 @@
+\begin{table}[H]
+    \centering
+    \caption{Risorse richieste per un ipotetico scenario in produzione.}
+    % \begin{adjustbox}{max width=\textwidth}
+% 
+% 
+    \bgroup
+    \def\arraystretch{1.5}% padding delle celle, 1% è default
+    % 
+    \begin{tabular}{||l||ccc||}
+        \hhline{|t:=:t:===:t|}
+        \multirow{2}{*}{}& \multicolumn{3}{c||}{PRODUCTION ENVIRONMENT} 
+        \\ 
+        % \cline{2-4}
+        \hhline{||~||---||}
+        & RAM (MB) & CPU (GHz) & DISK (GB)
+        \\ 
+        \hhline{|:=::===:|}
+        \begin{tabular}[c]{@{}l@{}}Region controller\\(senza PostgreSQL)\end{tabular} & 2048 & 2.0 & 5 
+        \\ 
+        \hhline{||-||---||}
+        Rack controller & 2048 & 2.0 & 20
+        \\ 
+        \hhline{||-||---||}
+        PostgreSQL & 2048 & 2.0 & 20
+        \\ 
+        \hhline{||-||---||}
+        Ubuntu Server & 512 & 0.5 & 5
+        \\
+        \hhline{|b:=:b:===:b|}
+    \end{tabular}
+    % 
+    \egroup
+% 
+% 
+    % \end{adjustbox}
+    \label{tab:mass_requ_prod}
+\end{table}

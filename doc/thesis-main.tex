@@ -1,0 +1,55 @@
+\documentclass[12pt,a4paper,openright,twoside]{book}
+
+\usepackage{./stili/thesis-style}
+
+\begin{document}
+
+\frontmatter
+% \pagenumbering{roman}
+
+\input{front.tex}
+
+\input{./stili/settings.tex}
+
+%----------------------------------------------------------------------------------------
+
+% INDICE
+\tableofcontents
+
+% LISTA DELLE FIGURE
+% \listoffigures     % (optional) comment if empty
+
+% LISTA DEI LISTATI
+% \lstlistoflistings % (optional) comment if empty
+
+%----------------------------------------------------------------------------------------
+
+\mainmatter
+% \pagenumbering{arabic}
+
+% per aggiungere bordo in alto con numero della pagina
+\pagestyle{fancy}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LE,RO]{\thepage}
+\fancyfoot{}
+
+%----------------------------------------------------------------------------------------
+% TESI
+%----------------------------------------------------------------------------------------
+
+% \layout*
+% \Blinddocument
+\input{tesi/testo/0_main_testo}
+
+
+%----------------------------------------------------------------------------------------
+%  BIBLIOGRAFIA
+%----------------------------------------------------------------------------------------
+
+% %\nocite{*} % uncomment this to show all the reference in the .bib file
+% \bibliographystyle{plain}
+% \bibliography{bibliography}
+
+
+\end{document}

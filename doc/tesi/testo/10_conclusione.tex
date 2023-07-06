@@ -1,0 +1,25 @@
+\chapter{Conclusioni e sviluppi futuri}
+
+Si può affermare di aver ampiamente raggiunto gli obbiettivi posti all'inizio del progetto, riuscendo a realizzare un cloud privato funzionante basato su OpenStack e a realizzare infrastrutture appoggiate a tale cloud utilizzando esclusivamente Terraform.
+
+\paragraph{OpenStack.} OpenStack si è rivelato essere una piattaforma estremamente versatile e personalizzabile, adatta a molteplici esigenze e casi d'uso grazie alla sua modularità e alle funzionalità che offre. OpenStack offre infatti un set di funzionalità paragonabile ad un qualsiasi cloud provider e, in base alla mia esperienza, addirittura superiore ad altri sistemi esistenti che permettono di realizzare cloud privati, sia a pagamento che open source (ad esempio VMware vSphere o Proxmox).
+
+L'unica criticità che ho riscontrato in OpenStack è legata al numero di servizi richiesti per far funzionare il cloud; sono infatti presenti numerosi servizi che definirei di "supporto", ovvero che servono per far funzionare la piattaforma ma non aggiungono alcun tipo di funzionalità per l'utente finale. Questi servizi causano un overhead di risorse che, nel caso di deployment di piccole dimensioni e con poche risorse hardware disponibili, potrebbe essere critico o addirittura determinate l'esclusione di OpenStack dalla lista delle possibili piattaforme su cui basare il cloud.
+
+\paragraph{Deployment del cloud.} I sistemi di supporto al deployment utilizzati (MAAS e Juju) hanno notevolmente facilitato l'installazione e la configurazione, creando un livello di astrazione aggiuntivo tra l'utente e i singoli servizi. È bastato infatti scrivere poche linee di configurazione per installare tutto il cloud senza la necessità intervenire sui singoli file di configurazione di ciascun servizio.
+
+Questa ulteriore astrazione porta però con sé una criticità: è molto complicato e addirittura sconsigliato da Juju andare a modificare manualmente i file di configurazione dei singoli servizi; questo può essere un problema specialmente nei casi in cui si tratta di servizi distribuiti su più macchine, come ad esempio Ceph o Nova.
+
+Nel caso di Ceph per esempio, è necessario che tutte le macchine abbiano esattamente lo stesso numero di dischi configurati nello stesso modo perché, come visto nella \cref{sec:openstack_manual_installation}, i device assegnati a Ceph vengono definiti globalmente e non possono essere modificati per una singola macchina.
+
+Questa limitazione nella configurazione porta ad avere la necessità di installare tutti i servizi dello stesso tipo su macchine molto simili se non identiche.
+
+\paragraph{Terraform.} Personalmente prima dell'inizio di questo progetto di tesi non conoscevo tool come Terraform o simili; nonostante questo è stato relativamente semplice utilizzarlo grazie anche alla documentazione molto esaustiva fornita. Terraform si è rivelato essere uno strumento estremamente potente e utile, che permette realizzare e modificare infrastrutture molto complesse in maniera abbastanza semplice e sicuramente più veloce rispetto ad eseguire tutte le operazioni manualmente.
+
+\section{Sviluppi futuri}
+
+La prima attività da menzionare quando si parla dei possibili sviluppi futuri è sicuramente verificare che la metodologia di deployment utilizzata durante questo progetto sia ancora valida per le versioni successive di OpenStack. Dato il livello di astrazione fornito dai sistemi di deployment utilizzati mi sento abbastanza sicuro nel dire che dovrebbe bastare la modifica di alcuni parametri all'interno dei file bundle di Juju per poterli riutilizzare per il deployment di una versione successiva.
+
+Un'altra attività fondamentale sarebbe quella di verificare lo stato dei dischi all'interno delle macchine e, nel caso siano danneggiati, sostituirli e rifare il deployment del cloud. Questo perché durante lo svolgimento del progetto sono sorti alcuni problemi di responsività del sistema e, dato il fallimento del test S.M.A.R.T. su alcune macchine, si presume che alcuni dischi abbiano dei settori danneggiati e che ciò influisca in maniera negativa sulle performance.
+
+Altre possibili attività potrebbero riguardare l'installazione e la configurazione di servizi aggiuntivi di OpenStack, come ad esempio Zun che permette di gestire container direttamente da OpenStack senza dover creare istanze, oppure Trove che implementa un servizio di database as a service. Mi sembra chiaro ormai che se si vogliono esplorare altri componenti e funzionalità di OpenStack le possibilità sono moltissime e c'è l'imbarazzo della scelta.

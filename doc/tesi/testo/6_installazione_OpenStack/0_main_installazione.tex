@@ -1,0 +1,130 @@
+\chapter{Installazione di OpenStack}
+% https://docs.openstack.org/charm-guide/latest/index.html
+% https://docs.openstack.org/charm-guide/latest/concepts/charm-types.html
+Una volta creato il model con Juju (ref), che rappresenta il contenuto software del cloud, arriva il momento di popolarlo con le applicazioni che costituiranno i servizi del cloud.
+% 
+Per fare ciò si utilizza sempre Juju, il quale in maniera più o meno automatizzata effettuerà il deployment dei charm sui vari nodi indicati.
+
+Prima di procedere nell'installazione, è importate prestare attenzione ad alcuni aspetti, in particolare quelli riguardanti le versioni, in quanto essendo un progetto in rapido sviluppo le versioni utilizzate in questo documento diverranno con molta probabilità obsolete nel giro di una manciata di mesi.
+
+
+\section{Concetti preinstallazione}
+\subsection{Tipologie di charm su OpenStack.} 
+Su OpenStack esistono due tipologie di charm \cite{openstack_charms_type}: quelli che utilizzano i \emph{channel} e quelli \emph{legacy} che non lo utilizzano.
+
+I charm di tipo \textbf{channel} sono quelli la cui release è dedicata ad una specifica combinazione del sistema operativo (detta anche \emph{series}) e della versione di OpenStack;
+% 
+questa combinazione è chiamata \emph{series-openstack}
+% 
+Questo implica che se un charm funziona per una recente combinazione di series-openstack, non è garantito che funzioni correttamente su una combinazione precedente.
+% 
+Inoltre, bisogna passare ad un channel diverso nel caso in cui si voglia eseguire l'aggiornamento ad una nuova versione di OpenStack. 
+% 
+Per fare un esempio, durante il deploy di alcuni charm si è utilizzato l'argomento \code{-{}-channel yoga/stable}; ciò implica la versione di OpenStack Yoga, che è funzionante sulla versione di Ubuntu Focal (20.04 LTS) o Jammy (22.04 LTS).
+
+I charm di tipo \textbf{legacy} invece includono all'interno tutte le funzionalità delle revisioni precedenti e dunque funzionano anche con una combinazione series-openstack antecedente.
+% 
+Tuttavia, il loro sviluppo si è fermato dalla versione 21.10 di OpenStack Charms (Ottobre 2021), di conseguenza l'ultimo supporto alla combinazione series-openstack è quella \code{focal-xena}.
+
+In questo progetto sono stati utilizzati solo charms di tipo channel, e su ogni comando di deploy è stata specificata appunto la versione.
+% 
+In caso si volessero replicare i comandi su series-openstack più aggiornati, è necessario consultare le versioni adeguate dei channel nelle pagine di documentazione individuali dei singoli charm.
+
+
+
+\subsection{Versione di OpenStack.}\label{sec:openstack_version} 
+All'inizio del progetto di questa tesi, era da poco uscita la versione di OpenStack chiamata \emph{Yoga}, in data 2022-03-30, e pertanto tutta l'installazione è basata su questa versione.
+% 
+Durante la conclusione dei lavori progettuali, in data 2022-10-05 è uscita una nuova release, chiamata \emph{Zed} , mentre nel prossimo futuro è prevista l'uscita di \emph{Antelope} con data stimata 2023-03-22, e la successiva versione \emph{Bobcat} con data stimata 2023-10-04.
+%
+Nonostante il progetto OpenStack cresca velocemente, le release vengono mantenute a lungo, anche grazie al supporto della community;
+% 
+per esempio, la versione \emph{Queens} uscita in data 2018-02-28 ha terminato solo da poco il suo ciclo di vita (2023-01-18), avendo 
+quindi potuto godere di un supporto per quasi cinque anni.
+
+
+
+\subsection{Distribuzione dei charm all'interno delle macchine del cluster.}
+Come spiegato nella \cref{subsec:juju_funzionamento}, è compito di Juju di occuparsi del completo dispiegamento delle applicazioni nelle varie macchine collegate su MAAS.
+% 
+Le varie applicazioni saranno distribuite tra le quattro macchine a disposizione, in modo tale da avere una ripartizione equa in termini di risorse computazionali e di storage.
+% 
+In oltre, alcune di esse verranno replicate su più macchine in modo tale da creare ridondanza e suddivisione del carico di lavoro.
+% 
+Quindi, tutti gli aspetti inerenti al ciclo di vita delle applicazioni come l'installazione o la sincronizzazione tra le unit (le istanze effettive in esecuzione delle applicazioni), saranno gestiti completamente da Juju.
+% 
+Le uniche cose necessarie da definire sono quali charm installare e la loro versione, su quale macchine dispiegarli e risolvere le loro relazioni (integrazioni dalla versione 3.0 di Juju).
+
+La decisione su quali charm usare e la loro suddivisione adottata in questo progetto è quella implementata da Canonical nei suoi esempi di Charms Deployment (\cref{sec:deplyoment_method}).
+% 
+Di seguito vengono elencate le applicazioni e i relativi charm suddivisi tra le quattro macchine (la quinta è stata successivamente utilizzata per il deployment dei servizi dedicati al load balancer).
+
+% \footnotesize
+\begin{itemize}
+    \footnotesize
+    \item Ceph OSD (\code{ceph-osd}), OVN Central (\code{ovn-central}), MySQL InnoDB Cluster (\code{mysql-innodb-cluster}), Keystone (\code{keystone}), Ceph Mon (\code{ceph-mon}) e Ceph RADOS Gateway (\code{ceph-radogsw}).
+
+    \item Ceph OSD (\code{ceph-osd}), Nova Compute (\code{nova-compute}), MySQL InnoDB Cluster (\code{mysql-innodb-cluster}), OVN Central (\code{ovn-central}), Cinder (\code{cinder}), Neutron API (\code{neutron-api}), Ceph Mon (\code{ceph-mon}).
+
+    \item Ceph OSD (\code{ceph-osd}), Nova Compute (\code{nova-compute}), MySQL InnoDB Cluster (\code{mysql-innodb-cluster}), OVN Central (\code{ovn-central}), RabbitMQ Server (\code{rabbitmq-server}), OpenStack Dashboard (\code{openstack-dashboard}), Ceph Mon (\code{ceph-mon}).
+
+    \item Ceph OSD (\code{ceph-osd}), Nova Compute (\code{nova-compute}), Nova Cloud Controller (\code{nova-cloud-controller}), Vault (\code{vault}), Glance (\code{glance}).
+\end{itemize}
+
+
+% \noindent
+% OPPURE
+
+% \begin{enumerate}
+%     \item Ceph OSD, MySQL InnoDB Cluster, OVN Central, Keystone, Ceph Mon e Ceph RADOS Gateway.
+    
+%     \item Ceph OSD, Nova Compute, MySQL InnoDB Cluster, OVN Central, Neutron API, Ceph Mon, Cinder.
+
+%     \item Ceph OSD, Nova Compute, MySQL InnoDB Cluster, OVN Central, RabbitMQ Server, OpenStack Dashboard, Ceph Mon.
+
+%     \item Ceph OSD, Nova Compute, Vault, Nova Cloud Controller , Placement, Glance.
+% \end{enumerate}
+    
+% \begin{enumerate}
+%     \item ceph-osd, mysql-innodb-cluster, ovn-central (neutron), keystone, ceph-mon, ceph-radogsw
+
+%     \item ceph-osd, nova-compute, mysql-innodb-cluster, ovn-central (neutron), neutron-api, ceph-mon, cinder
+
+%     \item ceph-osd, nova-compute, mysql-innodb-cluster, ovn-central (neutron), rabbitmq-server, openstack-dashboard, ceph-mon
+
+%     \item ceph-osd, nova-compute, vault, nova-cloud-controller, placement, glance 
+% \end{enumerate}
+    
+\subsection{Monitoraggio del deploy.}
+Indipendentemente dalla tipologia di deployment scelta (un charm alla volta o in bundle rif), è possibile seguire ogni singolo passaggio che Juju effettua all'interno del cluster.
+% 
+Eseguendo il comando \code{juju status} quindi, verrà stampato lo stato attuale del cloud, elencando per ogni applicazione, unit e relazione varie informazioni a riguardo, come la macchina o il container sul quale verranno installati, i vari indirizzi IP e lo status ognuno di essi.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{tesi/files/immagini/openstack/es_juju_status.png}
+    \caption{Esempio d'output di \code{juju status} durante le prime fasi di deploy dei charm.}
+    \label{fig:openstack_es_status}
+\end{figure}
+
+\bigskip\noindent
+In particolare, è molto utile specialmente le prime volte per capire ed imparare i vari status delle applicazioni, nonché come primo punto di debug in caso di anomalie; 
+% 
+questo perché verranno mostrati anche messaggi sulla condizione di ogni elemento mostrato, come è possibile vedere in \cref{fig:openstack_es_status}.
+
+Durante tutto il deployment del cloud, sarà normale notare messaggi come relazioni mancanti o unit bloccate, in quanto tali requisiti non possono essere risolti immediatamente fintanto che una successiva applicazione non viene installata.
+% 
+Un modo più conveniente per monitorare la progressione del deploy è quello di eseguire il comando \code{watch -n 5 -c juju status -{}-color} in un terminale separato; 
+% 
+questo comando eseguirà ogni \code{5} secondi il comando \code{juju status -{}-color}, molto utile per avere un continuo aggiornamento sull'avanzamento dell'installazione.
+
+
+\newpage
+
+\input{tesi/testo/6_installazione_OpenStack/1_installazione_manuale}
+\newpage
+
+\input{tesi/testo/6_installazione_OpenStack/2_Installazione_bundle}
+\newpage
+
+\input{tesi/testo/6_installazione_OpenStack/3_post_installazione}

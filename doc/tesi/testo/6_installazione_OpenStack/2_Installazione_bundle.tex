@@ -1,0 +1,52 @@
+\section{Installazione in bundle}\label{sec:openstack_installazione_bundle}
+
+Come accennato in precedenza all'interno del capitolo riguardante Juju, un bundle è un file yaml contenente la lista di tutti i charm che si vogliono installare con le relative configurazioni; è possibile inoltre definire delle variabili all'interno del file bundle che poi potranno essere utilizzate come parametri di configurazione di uno o più charm.
+
+All'interno del \cref{lst:openstack_bundle_example} è riportato un esempio estratto dal bundle realizzato durante lo svolgimento di questo progetto, che mostra in che modo deve essere strutturata la configurazione di un charm (l'intero bundle è consultabile in \cref{app:openstack_bundle}).
+
+\begin{lstlisting}[
+    language=yaml, 
+   caption={Esempio di configurazione di un charm all'interno del bundle.},
+    label={lst:openstack_bundle_example},
+]
+variables:
+    osd-devices: &osd-devices /dev/sdb /dev/sdc
+    openstack-origin: &openstack-origin cloud:focal-yoga
+    ceph-channel: &ceph-channel quincy/stable
+applications:
+    ceph-osd:
+        charm: ch:ceph-osd
+        channel: *ceph-channel
+        num_units: 4
+        options:
+          osd-devices: *osd-devices
+          source: *openstack-origin
+        to:
+        - '0'
+        - '1'
+        - '2'
+        - '3'
+
+\end{lstlisting}
+
+Come si può notare dall'esempio sopra la variabili devono essere definite all'intenro della chiave \emph{variables} e devono avere il seguente formato:\newline
+\verb|nome-variabile: &nome-variabile valore|.
+Possono essere richiamate utilizzando la sintassi seguente: \verb|*nome-variabile|
+
+Per quanto riguarda i charm, ciascuno di essi deve essere definito all'interno della chiave \emph{applications}. Come si può vedere dall'esempio nel \cref{lst:openstack_bundle_example}, il charm (in questo caso \emph{ceph-osd}) ha diversi parametri di configurazione: alcuni sono comuni a tutti i charm mentre altri sono specifici per il charm che si sta configurando. I parametri in comune tra tutti i charm sono i seguenti:
+\begin{itemize}
+    \item \textbf{charm}: indica il charm da installare (il prefisso \emph{ch:} indica che deve essere scaricato da Charmhub)
+    \item \textbf{channel}: indica la versione del charm
+    \item \textbf{num\_units}: indica il numero di istanze che devono essere eseguite
+    \item \textbf{options}: al suo interno devono essere specificate tutti le configurazioni specifiche del charm
+    \item \textbf{to}: indica le macchine sulle quali deve essere installato il charm; se viene inserito solamente il numero della macchina il charm verrà installato direttamente sul sistema operativo host mentre se viene specificato nel formato \verb|lxd:<id_macchina>| verrà istanziato un container sulla macchine selezionata all'interno del quale verrà installato il charm
+\end{itemize}
+
+\paragraph{Generazione del bundle.} La generazione del bundle è un'operazione abbastanza complessa che può richiedere molto tempo e durante la quale è facile fare piccoli errori che causerebbero il malfunzionamento di tutto il sistema. Per questo motivo esiste una funzionalità di Juju che permette di generare un bundle partendo da un deployment già esistente. Questa operazione può essere eseguita semplicemente lanciando il comando \verb|juju export-bundle|.
+
+Durante lo svolgimento di questo progetto è stato tentato questo approccio però sono stati riscontrati diversi problemi a causa dei quali non è stato possibile installare OpenStack utilizzando solamente il bundle generato da Juju. La soluzione adottata è stata quella di fare un'unione manuale tra il bundle generato e quello di esempio messo a disposizione da OpenStack \cite{openstack_example_bundle}.
+
+\paragraph{Deploy del bundle} Una volta generato il bundle è possibile eseguire il deploy semplicemente lanciando il comando \verb|juju deploy ./bundle.yaml|.
+È importante che il nome del file bundle sia inserito come percorso anche se si trova nella cartella corrente perché in caso contrario Juju lo tratterebbe come se fosse il nome di un charm e ovviamente l'installazione fallirebbe.
+
+Una volta conclusa l'installazione dei charm sarà comunque necessario eseguire la configurazione iniziale di \emph{Vault} manualmente seguendo la procedura utilizzata durante l'installazione manuale di OpenStack e descritta nella \cref{subpar:vault_configuration}.

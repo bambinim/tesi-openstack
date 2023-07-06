@@ -1,0 +1,206 @@
+
+% \lstset{
+% 	showstringspaces=false,
+% 	basicstyle=\ttfamily,
+% 	commentstyle={\color{olive}},
+% 	identifierstyle=\color{black},
+% 	ndkeywordstyle={\color{blue}},
+% 	stringstyle={\color{magenta}},
+% 	emphstyle={},
+% 	keywordstyle={\color{blue}},
+% 	breaklines=true,
+% 	numbers=left,
+% 	numberstyle=\tiny\color{gray},
+% 	numbersep=10pt,
+% 	tabsize=2,
+% 	extendedchars=true,
+% 	frame=trBL,
+% 	frameround=fttt,
+% }
+
+% \lstdefinelanguage{Kotlin}{
+% 	comment=[l]{//},
+% 	emph={delegate, filter, first, firstOrNull, forEach, lazy, map, mapNotNull, println, return@},
+% 	keywords={abstract, actual, as, as?, break, by, class, companion, continue, data, do, dynamic, else, enum, expect, false, final, for, fun, get, if, import, in, interface, internal, is, null, object, override, package, private, public, return, set, super, suspend, this, throw, true, try, typealias, val, var, vararg, when, where, while},
+% 	morecomment=[s]{/*}{*/},
+% 	morestring=[b]",
+% 	morestring=[s]{"""*}{*"""},
+% 	ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String, Unit, it},
+% 	sensitive=true
+% }
+
+
+
+
+% \lstset{basicstyle=\ttfamily,
+%     showstringspaces=false,
+%     commentstyle=\color{red},
+%     keywordstyle=\color{blue}
+% }
+
+% https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{lgray},%{yellow!15},
+  % backgroundcolor=\color{white},        % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\ttfamily\footnotesize,%\small,    % the size of the fonts that are used for the code
+  breakatwhitespace=false,              % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                      % sets automatic line breaking
+  captionpos=b,                         % sets the caption-position to bottom
+  columns=flexible,
+  commentstyle=\color{Green3},       % comment style
+  deletekeywords={...},                 % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},               % if you want to add LaTeX within your code, es %*$\sim$*) ($$ attiva la mod matematica, \sim è tilde centrato
+  extendedchars=true,                   % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  firstnumber=1,                        % start line enumeration with line 1000
+  % frame=single,	                      % adds a frame around the code
+  frame=trBL,	     %arrotondamenti
+  frameround=fttt, %arrotondamenti
+  keepspaces=true,                      % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},            % keyword style
+%   language=Java,                      % the language of the code
+  morekeywords={*,String},              % if you want to add more keywords to the set
+  numbers=left,                         % where to put the line-numbers; possible values are (none, left, right)
+  % numbersep=1pt,                        % how far the line-numbers are from the code
+  numbersep=10pt, %per allontanare di più i numeri di riga
+  numberstyle=\tiny\color{mygray},      % the style that is used for the line-numbers
+  rulecolor=\color{black},              % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                     % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,               % underline spaces within strings only
+  showtabs=false,                       % show tabs within strings adding particular underscores
+  stepnumber=1,                         % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{red},              % string literal style
+  tabsize=2,                            % sets default tabsize to 2 spaces
+  title=\lstname                        % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+% l'unico modo decente che ho trovato per aggiungere keyword solamente ad un linguaggio (con otherkeyword lo aggiunge a tutti) è stato quello di creare un altro linguaggio importandolo da uno già esistente
+% colori da definire, messi un po' a caso
+\lstdefinelanguage{mybash}[]{bash}
+{
+    % colore sfondo
+    % backgroundcolor=\color{lgray},%{yellow!15},
+    %
+    % primo gruppo di parole
+    morekeywords=[1]{sudo, mkdir, curl, grep, git, clone, >, maas, snap, juju},
+    % keywordstyle=[1]\color{blue},
+    %
+    % secondo gruppo di parole
+    morekeywords=[2]{install, init, createadmin, apikey, add-cloud, add-credential, bootstrap, add-model, switch, status, deploy, add-relation, config, run, token, create, run-action},
+    keywordstyle=[2]\color{orange},
+    %
+    % considera lettere i seguenti simboli
+    alsoletter={-, >},
+    %
+    % DELIMITATORI
+    % con i si indica di non mostrare i delimitatori
+    % con s si indicano 2 limitatori (inizio e fine)
+    % con l si indica solo il limitatore iniziale e vale fino a fine riga
+    % con n per fare cose innestate, non ho capito bene
+    %
+    %
+    % delimitatore per togliere la formattazione(delimitatore nastosco):
+    % da "^nf^" a "^nf^"
+    moredelim=[is]{^nf^}{^nf^},
+    % 
+    % delimitatore per comandi (delimitatore nastosco):
+    % da "^c^" a "^c^"
+    moredelim=[is][\color{magenta}]{^c^}{^c^},
+    % 
+    % delimitatore automatico per comandi:
+    % da "--" a " "
+    moredelim=[s][\color{magenta}]{--}{\ },
+    %
+    deletestring=[d]",
+    % 
+    moredelim=[is][\color{magenta}]{☺}{☺}, %alt+1
+    moredelim=[is]{☻}{☻}, %alt+2
+    moredelim=[is][\color{orange}]{♥}{♥}, %alt+3
+    moredelim=[is][\color{blue}]{♦}{♦}, %alt+4
+    moredelim=[is][\color{red}]{♣}{♣}, %alt+5
+    moredelim=[is][\color{cyan}]{♠}{♠}, %alt+6
+    moredelim=[is][\color{purple}]{•}{•}, %alt+7
+    % moredelim=[is][\color{magenta}]{◘}{◘}, %alt+8
+}
+
+% per i listati del linguaggio HCL di Terraform
+\lstdefinelanguage{hcl}
+{
+    % colore sfondo
+    % backgroundcolor=\color{lgray},%{yellow!15},
+    %
+    % primo gruppo di parole
+    morekeywords=[1]{terraform, provider, resource, data, variable, output, locale, module, provisioner},
+    % keywordstyle=[1]\color{blue},
+    morecomment=[l]\#,
+    morestring=[d]{"},
+    stringstyle=\color{orange},
+    % 
+    moredelim=[is][\color{magenta}]{☺}{☺}, %alt+1
+    moredelim=[is]{☻}{☻}, %alt+2
+    moredelim=[is][\color{orange}]{♥}{♥}, %alt+3
+    moredelim=[is][\color{blue}]{♦}{♦}, %alt+4
+    moredelim=[is][\color{red}]{♣}{♣}, %alt+5
+    moredelim=[is][\color{cyan}]{♠}{♠}, %alt+6
+    moredelim=[is][\color{purple}]{•}{•}, %alt+7
+}
+
+\lstdefinelanguage{appendice}
+{
+    morecomment=[l]\#,
+    numbers=none,
+    moredelim=[is][\color{red}]{‼}{‼}, %alt+19
+}
+
+
+
+
+\newcommand\YAMLcolonstyle{\color{red}\mdseries}
+% \newcommand\YAMLkeystyle{\color{black}\bfseries}
+\newcommand\YAMLkeystyle{\color{black}\ttfamily\small}
+\newcommand\YAMLvaluestyle{\color{blue}\mdseries}
+
+\makeatletter
+
+% here is a macro expanding to the name of the language
+% (handy if you decide to change it further down the road)
+\newcommand\language@yaml{yaml}
+
+\expandafter\expandafter\expandafter\lstdefinelanguage
+\expandafter{\language@yaml}
+{
+    % keywords={true,false,null,y,n},
+    % keywordstyle=\color{darkgray}\bfseries,
+    basicstyle=\YAMLkeystyle,                                 % assuming a key comes first
+    sensitive=false,
+    comment=[l]{\#},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{purple}\ttfamily,
+    stringstyle=\YAMLvaluestyle\ttfamily,
+    moredelim=[l][\color{orange}]{\&},
+    moredelim=[l][\color{magenta}]{*},
+    moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},   % switch to value style at :
+    morestring=[b]',
+    morestring=[b]",
+    literate =    {---}{{\ProcessThreeDashes}}3
+                {>}{{\textcolor{red}\textgreater}}1
+                {|}{{\textcolor{red}\textbar}}1
+                {\ -\ }{{\mdseries\ -\ }}3,
+    %
+    moredelim=[is][\color{magenta}]{☺}{☺}, %alt+1
+    moredelim=[is]{☻}{☻}, %alt+2
+    moredelim=[is][\color{orange}]{♥}{♥}, %alt+3
+    moredelim=[is][\color{blue}]{♦}{♦}, %alt+4
+    moredelim=[is][\color{red}]{♣}{♣}, %alt+5
+    moredelim=[is][\color{cyan}]{♠}{♠}, %alt+6
+    moredelim=[is][\color{purple}]{•}{•}, %alt+7
+}
+
+% switch to key style at EOL
+\lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
+\makeatother
+
+\newcommand\ProcessThreeDashes{\llap{\color{cyan}\mdseries-{-}-}}

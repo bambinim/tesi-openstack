@@ -1,0 +1,38 @@
+\begin{table}[H]
+    \centering
+    \begin{adjustbox}{max width=\textwidth}
+% 
+% 
+    \bgroup
+    \def\arraystretch{1.5}% padding delle celle, 1% è default
+    % 
+    \begin{tabular}{||l||ccc||ccc||}
+        \hhline{|t:=:t:===:t:===:t|}
+        \multirow{2}{*}{}& \multicolumn{3}{c||}{TEST ENVIRONMENT} & \multicolumn{3}{c||}{\begin{tabular}[c]{@{}c@{}}PRODUCTION ENVIRONMENT\\\end{tabular}}
+        \\ 
+        % \cline{2-7}
+        \hhline{||~||---||---||}
+        & RAM (MB) & CPU (GHz) & DISK (GB) & RAM (MB) & CPU (GHz) & DISK (GB)
+        \\ 
+        \hhline{|:=::===::===:|}
+        \begin{tabular}[c]{@{}l@{}}Region controller\\(senza PostgreSQL)\end{tabular} & 512 & 0.5 & 5 & 2048 & 2.0 & 5
+        \\ 
+        \hhline{||-||---||---||}
+        PostgreSQL & 512 & 0.5 & 5 & 2048 & 2.0 & 20
+        \\ 
+        \hhline{||-||---||---||}
+        Rack controller & 512 & 0.5 & 5 & 2048 & 2.0 & 20
+        \\ 
+        \hhline{||-||---||---||}
+        Ubuntu Server & 512 & 0.5 & 5 & 512 & 0.5 & 5
+        \\
+        \hhline{|b:=:b:===:b:===:b|}
+    \end{tabular}
+    % 
+    \egroup
+% 
+% 
+    \end{adjustbox}
+    \caption{tabellina}
+    \label{tab:mass_req}
+\end{table}

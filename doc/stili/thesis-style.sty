@@ -1,0 +1,108 @@
+\usepackage[italian]{babel}
+
+\usepackage[a4paper,left=100pt,right=100pt]{geometry}
+
+% colori, vedi https://it.overleaf.com/learn/latex/Using_colours_in_LaTeX
+% \usepackage[dvipsnames]{xcolor}
+% \usepackage[svgnames]{xcolor}
+\usepackage[x11names]{xcolor}
+
+% per aggiungere gli evidenziamenti
+% \usepackage{xcolor, soul}
+% \sethlcolor{green}
+
+% creo un alias per un colore
+\colorlet{lgray}{Snow2!70}
+
+\usepackage{xparse}
+%\NewDocumentCommand{\codeword}{v}{%
+%    \texttt{\textcolor{blue}{#1}}%
+%}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+
+% packages
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% con \makeindex crea l'indice delle parole messe in \index{parola}
+% \usepackage{imakeidx}
+
+% per le immagini
+\usepackage{graphicx}
+
+%per importare immagini vettoriali svg
+\usepackage{svg}
+\usepackage{float}
+
+
+\usepackage{ulem}
+
+% https://tex.stackexchange.com/questions/104058/getting-emph-back-to-normal-after-loading-ulem
+\normalem
+
+% per includere nei riferimenti l'oggetto, da mettere dopo \usepackage{hyperref}
+% usare poi \cref{} al posto di \ref
+\usepackage[italian]{cleveref}
+
+% pack per tabelle
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{adjustbox}
+
+% aggiunge i listati
+\usepackage{listings}
+
+% per fare i disegnini con le righe unicode
+% \usepackage{pmboxdraw}
+
+\usepackage{blindtext}
+% \usepackage{layout}
+
+% per aggiungere stile carino nella numerazione pagina (intestazione)
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+
+
+
+% ho creato questa macro per scrivere in monospace con sfondo grigio (colore pers.)
+\newcommand{\code}[1]{\colorbox{lgray}{{\texttt{#1}}}}
+% \newcommand{\code}[1]{\colorbox{lgray}{{\small\texttt{#1}}}}
+
+% workaround:
+% ho creato un alias di hyperref MA con primo parametro obbligatorio
+% perchè ho notato che dava warning noiosi se l'etichetta includeva
+% il carattere _
+% primo argomento etichetta, secondo argomento testo
+% \myhref{etichetta}{testoh!}
+\newcommand{\myhref}[2]{\hyperref[#1]{\underline{#2}}}
+
+
+% per rinominare correttamente la caption dei listati
+\renewcommand{\lstlistingname}{Listato}
+\renewcommand{\lstlistlistingname}{Elenco dei listati}
+
+
+% per rinominare quando si usa \cref
+% {elemento}{singolare}{plurale}
+\crefname{lstlisting}{listato}{listati}
+\crefname{lstlistlisting}{elenco dei listati}{elenco dei listati}
+\crefname{figure}{figura}{figure}
+
+
+%-----------------------------------------------------
+% LISTING CONFIGURATIONS
+%-----------------------------------------------------
+
+% spostato le definizioni dei listati in un altro file, per tenere + pulito questo file di stili
+\usepackage{stili/language}
+
+\usepackage{dirtree}
